@@ -31,12 +31,13 @@ const express = require('express')
 const path = require('path')
 
 const app = express()
+const cors = require('cors')
 const PORT = process.env.PORT || 3000
 const HOST = process.env.HOST || 'localhost'
-// const AMOUNT_TO_MINT = process.env.AMOUNT_TO_MINT || 100
 const { spawn } = require('child_process')
 
 app.use(bodyParser.json())
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -58,12 +59,15 @@ app.get('/', function (req, res, next) {
 
 app.post('/v1/createwallet', async (req, res) => {
 
-    const libra_cli = spawn('docker', ['run', '-v', 'libra_vol', '--rm', '-i', 'libra_client'])
-    await sleep(2000)
+    const libra_cli = spawn(
+        'docker', ['run', '--mount', `type=bind,source=${__dirname}/wallet,target=/libravolume`, '--rm', '-i', 'libra_client'],
+        {stdio: ['pipe', 'pipe', process.stderr]})
+
+    await sleep(1000)
     await streamWrite(libra_cli.stdin, 'account create\n')
     await sleep(1000)
     await streamWrite(libra_cli.stdin, `account mint 0 200\n`)
-    await sleep(2000)
+    await sleep(1000)
     await streamWrite(libra_cli.stdin, `query balance 0\n`)
     await sleep(1000)
 
@@ -71,16 +75,21 @@ app.post('/v1/createwallet', async (req, res) => {
     for await (const line of chunksToLinesAsync(libra_cli.stdout)) {
         if (-1 != line.search("Created/retrieved account #0")) {
             address = line.split('account #0 address ')[1].replace('\n', '')
+            await streamWrite(libra_cli.stdin, `account write /libravolume/${address}\n`)
+            await sleep(1000)
+            await streamWrite(libra_cli.stdin, 'quit\n')
         } else if (-1 != line.search("Balance is: ")) {
             bal = line.split('Balance is: ')[1].replace('\n', '')
         }
+        console.log(line)
     }
 
-    if (address) {
-        await streamWrite(libra_cli.stdin, `account write /wallet_data/${address}\n`)
-    }
-    await streamWrite(libra_cli.stdin, 'quit\n')
-    await sleep(1000)
+    // console.log(address)
+    // if (address) {
+    //    await streamWrite(libra_cli.stdin, `account write /wallet_data/${address}\n`)
+    // }
+    // await streamWrite(libra_cli.stdin, 'quit\n')
+    await sleep(3000)
 
     res.json({ address: address, balance: bal })
 })

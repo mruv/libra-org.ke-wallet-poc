@@ -6,6 +6,9 @@ import {
 import { AddSharp } from '@material-ui/icons'
 import Axios from 'axios'
 
+
+const http = Axios.create({timeout : 1000 * 10})
+
 export default () => {
 
     const [isCreatingWallet, setIsCreatingWallet] = useState(false)
@@ -13,10 +16,10 @@ export default () => {
     const handleCreateWallet = (e) => {
         setIsCreatingWallet(true)
 
-        Axios.post("/v1/createwallet").then(res => {
+        http.post("/v1/createwallet").then(res => {
             console.log(res.data)
-            setIsCreatingWallet(true)
-        })
+            setIsCreatingWallet(false)
+        }).catch(e => console.log(e))
     }
 
     return (
