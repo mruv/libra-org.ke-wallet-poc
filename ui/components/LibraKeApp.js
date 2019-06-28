@@ -52,7 +52,7 @@ export default () => {
                     {isCreatingWallet ? <CircularProgress size={28} /> : (
                         <Button variant="contained" onClick={handleCreateWallet}>
                             <AddSharp color="secondary" fontWeight="700" fontSize="small" />
-                            <Typography variant="body1">Create Your Wallet</Typography>
+                            <Typography variant="body1">Create Your Account</Typography>
                         </Button>
                     )}
                 </Box>
