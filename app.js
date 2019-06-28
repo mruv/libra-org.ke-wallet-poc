@@ -81,7 +81,7 @@ app.post('/v1/createwallet', async (req, res) => {
         } else if (-1 != line.search("Balance is: ")) {
             bal = line.split('Balance is: ')[1].replace('\n', '')
         }
-        console.log(line)
+        // console.log(line)
     }
 
     // console.log(address)
