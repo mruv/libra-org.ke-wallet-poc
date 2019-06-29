@@ -74,7 +74,6 @@ app.post('/v1/createwallet', async (req, res) => {
 
     // wait till the container has stopped
     await sleep(3000)
-
     const account = { address: address, balance: bal }
     // keep track
     req.session.account = account
@@ -88,7 +87,6 @@ app.post("/v1/send", async (req, res) => {
     const { rcvrAddress, amount } = req.body
     const { address, balance } = req.session.account
 
-    console.log(address)
     const libra_cli = spawn(
         'docker', ['run', '--mount', `type=bind,source=${__dirname}/wallet,target=/libravolume`, '--rm', '-i', 'libra_client'],
         { stdio: ['pipe', 'pipe', process.stderr] })
@@ -113,7 +111,7 @@ app.post("/v1/send", async (req, res) => {
         console.log(line)
     }
 
-
+    console.log("BALANCE : ", newBalance)
     if (newBalance == balance) {
         res.json({ isSuccess: false })
     } else {
