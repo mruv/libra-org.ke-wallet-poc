@@ -1,8 +1,15 @@
-import { TextField, Button, Box, Typography } from '@material-ui/core'
-import { Fragment } from 'react';
-import { ArrowBackOutlined, ArrowForwardOutlined } from '@material-ui/icons';
+import { useState } from 'react'
+import Axios from 'axios'
+import { SendForm, SendDone, SendLoader } from '../components'
 
-export default ({ myBal, history }) => {
+Axios.defaults.timeout = 1000 * 30
+
+export default ({ myBal, history, updateAccount }) => {
+
+    const [isSending, setIsSending] = useState(false)
+    const [isSent, setIsSent] = useState(false)
+    const [isSuccess, setIsSuccess] = useState(false)
+    const [formData, setFormData] = useState({ address: '', amount: 0 })
 
     const handleCancel = () => {
         history.goBack()
@@ -10,63 +17,45 @@ export default ({ myBal, history }) => {
 
     const handleSend = () => {
 
+        setIsSending(true)
+        Axios.post("/v1/send", {
+            rcvrAddress: formData.address,
+            amount: formData.amount
+        }).then(res => {
+            const { isSuccess, account } = res.data
+            if (isSuccess) {
+                updateAccount(account)
+            }
+            setIsSending(false)
+            setIsSent(true)
+            setIsSuccess(isSuccess)
+        })
     }
 
-    const handleChange = (e) => {
+    const handleChange = name => e => {
+        const { name, value } = e.target
+        setFormData({
+            ...formData,
+            [name]: value
+        })
+    }
 
+    const handleGoBack = () => {
+        history.goBack()
+    }
+
+    if (isSending)
+        return <SendLoader />
+
+    if (isSent) {
+        return <SendDone isSuccess={isSuccess} onGoBack={handleGoBack} />
     }
 
     return (
-        <Fragment>
-            <Box
-                display="flex"
-                flexDirection="column"
-                minWidth="75%"
-                justifyContent="center">
-                <Box p={1}>
-                    <Typography variant="h4">
-                        Transfer Libra Coins
-                    </Typography>
-                </Box>
-                <Box p={2}>
-                    <TextField
-                        label="Address"
-                        placeholder="Libra address"
-                        fullWidth
-                        margin="normal"
-                        variant="outlined"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
-                </Box>
-                <Box p={2}>
-                    <TextField
-                        label="Amount"
-                        placeholder="amount"
-                        fullWidth
-                        margin="normal"
-                        variant="outlined"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
-                </Box>
-                <Box
-                    p={2}
-                    display="flex"
-                    flexDirection="row"
-                    justifyContent="space-between">
-                    <Button size="large" variant="outlined" color="secondary" onClick={handleCancel}>
-                        <ArrowBackOutlined />
-                        <Typography variant="body1" style={{ paddingLeft: "16px" }}>Cancel</Typography>
-                    </Button>
-                    <Button size="large" variant="outlined" color="primary" onClick={handleSend}>
-                        <Typography variant="body1" style={{ paddingRight: "16px" }}>Send</Typography>
-                        <ArrowForwardOutlined />
-                    </Button>
-                </Box>
-            </Box>
-        </Fragment>
+        <SendForm
+            {...formData} myBal={myBal}
+            handleSend={handleSend}
+            handleChange={handleChange}
+            handleCancel={handleCancel} />
     )
 }

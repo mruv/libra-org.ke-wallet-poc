@@ -15,7 +15,7 @@ const { spawn } = require('child_process')
 app.use(bodyParser.json())
 app.use(cors())
 app.use(session(
-    {'secret': 'HHgsggsysalllkTThsg667ffsgagHgJkd'}
+    { 'secret': 'HHgsggsysalllkTThsg667ffsgagHgJkd' }
 ))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')));
@@ -38,9 +38,9 @@ app.get('/', function (req, res, next) {
 app.get("/v1/initialize", (req, res) => {
 
     if (req.session.account) {
-        res.json({found: true, account : req.session.account})
+        res.json({ found: true, account: req.session.account })
     } else {
-        res.json({found : false})
+        res.json({ found: false })
     }
 })
 
@@ -54,7 +54,7 @@ app.post('/v1/createwallet', async (req, res) => {
     await sleep(1000)
     await streamWrite(libra_cli.stdin, 'account create\n')
     await sleep(1000)
-    await streamWrite(libra_cli.stdin, `account mint 0 200\n`)
+    await streamWrite(libra_cli.stdin, `account mint 0 20000\n`)
     await sleep(1000)
     await streamWrite(libra_cli.stdin, `query balance 0\n`)
     await sleep(1000)
@@ -85,7 +85,40 @@ app.post('/v1/createwallet', async (req, res) => {
 // Transfer some coins
 app.post("/v1/send", async (req, res) => {
 
-    // const { data} = req.
+    const { rcvrAddress, amount } = req.body
+    const { address, balance } = req.session.account
+
+    // console.log(address)
+    const libra_cli = spawn(
+        'docker', ['run', '--mount', `type=bind,source=${__dirname}/wallet,target=/libravolume`, '--rm', '-i', 'libra_client'],
+        { stdio: ['pipe', 'pipe', process.stderr] })
+
+    await sleep(1000)
+    await streamWrite(libra_cli.stdin, `account recover /libravolume/${address}\n`)
+    await sleep(1000)
+    await streamWrite(libra_cli.stdin, `transfer 0 0 0\n`)
+    await sleep(1000)
+    await streamWrite(libra_cli.stdin, `transfer 0 ${rcvrAddress} ${amount}\n`)
+    await sleep(2000)
+    await streamWrite(libra_cli.stdin, `query balance 0\n`)
+    await sleep(1000)
+    await streamWrite(libra_cli.stdin, 'quit\n')
+    await sleep(1000)
+
+    let newBalance
+    for await (const line of chunksToLinesAsync(libra_cli.stdout)) {
+        if (-1 != line.search("Balance is: ")) {
+            newBalance = line.split('Balance is: ')[1].replace('\n', '')
+        }
+        // console.log(line)
+    }
+
+    if (newBalance == balance) {
+        res.json({ isSuccess: false })
+    } else {
+        req.session.account = { ...req.session.account, balance: newBalance }
+        res.json({ isSuccess: true, account: req.session.account })
+    }
 })
 
 // start service

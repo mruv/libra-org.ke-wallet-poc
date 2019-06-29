@@ -2,7 +2,7 @@ import { Switch, Route, Redirect } from "react-router"
 import Home from "./Home"
 import Send from "./Send"
 
-export default ({ isCreatingWallet, onCreateWallet, account }) => {
+export default ({ account }) => {
 
     return (
         <Switch>
@@ -11,11 +11,9 @@ export default ({ isCreatingWallet, onCreateWallet, account }) => {
                 exact
                 render={(props) => (
                     <Home
-                        isCreatingWallet={isCreatingWallet}
-                        onCreateWallet={onCreateWallet}
                         account={account}
                         {...props} />)} />
-            <Route path="/send" render={(props) => <Send account={account} {...props} />} />
+            <Route path="/send" render={(props) => <Send myBal={account.balance} {...props} />} />
             <Route render={() => <Redirect to="/" />} />
         </Switch>
     )

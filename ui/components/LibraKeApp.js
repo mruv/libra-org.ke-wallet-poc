@@ -3,39 +3,32 @@ import {
     AppBar, Toolbar, Typography, Grid, Box, CircularProgress
 } from '@material-ui/core'
 import Axios from 'axios'
-import UiRoutes from "../pages/UiRoutes"
+import { Home, Send } from "../pages"
+import { Switch, Route } from "react-router"
 
-
-const http = Axios.create({ timeout: 1000 * 30 })
+Axios.defaults.timeout = 1000 * 30
 
 export default () => {
 
-    const [isCreatingWallet, setIsCreatingWallet] = useState(false)
     const [acct, setAcct] = useState(null)
     const [isInitializing, setIsInitializing] = useState(true)
     const [loadingLabel, setLoadingLabel] = useState("Initializing your account ...")
 
     useEffect(() => {
-        http.get('/v1/initialize').then(res => {
+        Axios.get('/v1/initialize').then(res => {
             const { data } = res
-            // console.log(data.found)
             if (data.found) {
                 setAcct(data.account)
                 setIsInitializing(false)
             } else {
                 setLoadingLabel("Creating a new account ...")
-                http.post("/v1/createwallet").then(res => {
+                Axios.post("/v1/createwallet").then(res => {
                     setAcct(res.data)
                     setIsInitializing(false)
-                    // console.log(res.data)
                 }).catch(e => console.log(e))
             }
         })
     }, [])
-
-    const handleCreateWallet = () => {
-        setIsCreatingWallet(true)
-    }
 
     return (
         <Fragment>
@@ -60,27 +53,30 @@ export default () => {
             </AppBar>
             <Box mt={12} display="flex" justifyContent="center">
                 <Box
-                    display="flex"
-                    width="75%"
-                    bgcolor="#fff"
-                    minHeight="500px"
-                    borderRadius={2}
-                    justifyContent="center"
-                    alignItems="center">
+                    display="flex" width="75%" bgcolor="#fff" minHeight="500px"
+                    borderRadius={2} justifyContent="center" alignItems="center">
                     {isInitializing ? (
-                        <Fragment>
-                            <Box>
-                                <CircularProgress size={32} />
+                        <Box
+                            display="flex" flexDirection="column" minWidth="100%"
+                            justifyContent="center" alignItems="center">
+                            <Box p={2}>
+                                <CircularProgress size={48} />
                             </Box>
-                            <Box>
+                            <Box p={2}>
                                 <Typography variant="body1">{loadingLabel}</Typography>
                             </Box>
-                        </Fragment>) : (
-                            <UiRoutes
-                                isCreatingWallet={isCreatingWallet}
-                                onCreateWallet={handleCreateWallet}
-                                account={acct}
-                            />)}
+                        </Box>
+                    ) : (<Switch>
+                        <Route
+                            path="/" exact
+                            render={(props) => (
+                                <Home
+                                    account={acct}
+                                    {...props} />)} />
+                        <Route path="/send" render={(props) => <Send updateAccount={setAcct} myBal={acct.balance} {...props} />} />
+                        <Route render={() => <Redirect to="/" />} />
+                    </Switch>)
+                    }
                 </Box>
             </Box>
         </Fragment>
