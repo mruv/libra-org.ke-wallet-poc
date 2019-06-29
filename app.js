@@ -88,7 +88,7 @@ app.post("/v1/send", async (req, res) => {
     const { rcvrAddress, amount } = req.body
     const { address, balance } = req.session.account
 
-    // console.log(address)
+    console.log(address)
     const libra_cli = spawn(
         'docker', ['run', '--mount', `type=bind,source=${__dirname}/wallet,target=/libravolume`, '--rm', '-i', 'libra_client'],
         { stdio: ['pipe', 'pipe', process.stderr] })
