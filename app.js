@@ -110,7 +110,7 @@ app.post("/v1/send", async (req, res) => {
         if (-1 != line.search("Balance is: ")) {
             newBalance = line.split('Balance is: ')[1].replace('\n', '')
         }
-        // console.log(line)
+        console.log(line)
     }
 
 
