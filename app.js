@@ -91,22 +91,22 @@ app.post("/v1/send", async (req, res) => {
         'docker', ['run', '--mount', `type=bind,source=${__dirname}/wallet,target=/libravolume`, '--rm', '-i', 'libra_client'],
         { stdio: ['pipe', 'pipe', process.stderr] })
 
-    await sleep(2000)
+    await sleep(1000)
     await streamWrite(libra_cli.stdin, `a r /libravolume/${address}\n`)
-    await sleep(500)
+    await sleep(1000)
     await streamWrite(libra_cli.stdin, `t 0 0 0\n`)
     await sleep(2000)
     await streamWrite(libra_cli.stdin, `t 0 ${rcvrAddress} ${amount}\n`)
     await sleep(2000)
     await streamWrite(libra_cli.stdin, `q b 0\n`)
     await sleep(1000)
-    await streamWrite(libra_cli.stdin, 'q!\n')
-    await sleep(1000)
 
     let newBalance
     for await (const line of chunksToLinesAsync(libra_cli.stdout)) {
         if (-1 != line.search("Balance is: ")) {
             newBalance = line.split('Balance is: ')[1].replace('\n', '')
+            await streamWrite(libra_cli.stdin, 'q!\n')
+            await sleep(1000)
         }
         console.log(line)
     }
