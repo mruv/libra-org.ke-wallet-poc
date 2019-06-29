@@ -1,28 +1,3 @@
-/*var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var restApiRouter = require('./routes/restapi');
-
-var app = express();
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/v1', restApiRouter)
-
-module.exports = app;*/
-
-
-
 require('dotenv').config()
 
 const { streamWrite, streamEnd, onExit, chunksToLinesAsync, chomp } = require('@rauschma/stringio')
@@ -47,16 +22,16 @@ app.use(function (req, res, next) {
     next()
 })
 
-// let libraClientCli
-
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
+// Load the SPA React.js UI
 app.get('/', function (req, res, next) {
     res.render('index')
 })
 
+// Create a Libra address and Mint some 200 coins
 app.post('/v1/createwallet', async (req, res) => {
 
     const libra_cli = spawn(
@@ -84,16 +59,19 @@ app.post('/v1/createwallet', async (req, res) => {
         // console.log(line)
     }
 
-    // console.log(address)
-    // if (address) {
-    //    await streamWrite(libra_cli.stdin, `account write /wallet_data/${address}\n`)
-    // }
-    // await streamWrite(libra_cli.stdin, 'quit\n')
+    // wait till the container has stopped
     await sleep(3000)
 
     res.json({ address: address, balance: bal })
 })
 
+// Transfer some coins
+app.post("/v1/send", async (req, res) => {
+
+    // const { data} = req.
+})
+
+// start service
 app.listen(PORT, HOST, () => {
     console.log(`Server is running on ${HOST} PORT: ${PORT}`)
 })

@@ -1,19 +1,22 @@
-import { ListItem, Box, ListItemText, Avatar, Button } from "@material-ui/core"
+import { Box, ListItemText, Button } from "@material-ui/core"
 
 
 export default ({ address, balance }) => {
 
-    {/* <Avatar src="/images/libra.png" /> */ }
     return (
-        <Box>
-            <Box display="flex" justifyContent="center" justifyItems="center">
+        <Box
+            display="flex"
+            flexDirection="column"
+            minWidth="75%"
+            justifyContent="center">
+            <Box p={1}>
                 <ListItemText primary="Address" secondary={address} />
             </Box>
-            <Box display="flex" justifyContent="center" justifyItems="center">
+            <Box p={1}>
                 <ListItemText primary="Balance" secondary={balance} />
             </Box>
-            <Box display="flex" justifyContent="center" justifyItems="center">
-                <Button variant="contained">
+            <Box p={1}>
+                <Button fullWidth variant="contained" size="large" color="secondary">
                     Send
                 </Button>
             </Box>

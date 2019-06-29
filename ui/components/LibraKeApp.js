@@ -3,9 +3,9 @@ import {
     AppBar, Toolbar, Typography,
     Grid, Box, Button, CircularProgress
 } from '@material-ui/core'
-import { AddSharp } from '@material-ui/icons'
 import Axios from 'axios'
 import { Account } from ".";
+import UiRoutes from "../pages/UiRoutes";
 
 
 const http = Axios.create({ timeout: 1000 * 30 })
@@ -15,13 +15,17 @@ export default () => {
     const [isCreatingWallet, setIsCreatingWallet] = useState(false)
     const [acct, setAcct] = useState(null)
 
-    const handleCreateWallet = (e) => {
+    const handleCreateWallet = () => {
         setIsCreatingWallet(true)
 
         http.post("/v1/createwallet").then(res => {
             setAcct(res.data)
             setIsCreatingWallet(false)
         }).catch(e => console.log(e))
+    }
+
+    const handleSend = () => {
+        history.go('/send')
     }
 
     return (
@@ -54,13 +58,11 @@ export default () => {
                     borderRadius={2}
                     justifyContent="center"
                     alignItems="center">
-                    {isCreatingWallet ? <CircularProgress size={28} /> : (
-                            acct ? <Account address={acct.address} balance={acct.balance} /> : (
-                                <Button variant="contained" onClick={handleCreateWallet}>
-                                    <AddSharp color="secondary" fontWeight="700" fontSize="small" />
-                                    <Typography variant="body1">Create Your Account</Typography>
-                                </Button>
-                            ))}
+                    <UiRoutes
+                        isCreatingWallet={isCreatingWallet}
+                        onCreateWallet={handleCreateWallet}
+                        account={acct}
+                    />
                 </Box>
             </Box>
         </Fragment>
