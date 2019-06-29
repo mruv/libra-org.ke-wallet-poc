@@ -1,4 +1,4 @@
-import { Box, ListItemText, Button, Typography } from "@material-ui/core"
+import { Box, ListItemText, Button, Typography, Link } from "@material-ui/core"
 
 
 export default ({ address, balance, onSend }) => {
@@ -15,18 +15,20 @@ export default ({ address, balance, onSend }) => {
                 </Typography>
             </Box>
             <Box p={1}>
-                <ListItemText primary="Address" secondary={address} />
+                <ListItemText
+                    primary="Address"
+                    secondary={(
+                        <Link
+                            target="_blank" rel="noopener noreferrer"
+                            href={`https://libranaut.io/accounts/${address}`}>{address}</Link>)} />
             </Box>
             <Box p={1}>
                 <ListItemText primary="Balance" secondary={balance} />
             </Box>
             <Box p={1}>
                 <Button
-                    fullWidth
-                    variant="contained"
-                    size="large"
-                    color="secondary"
-                    onClick={onSend}>
+                    fullWidth variant="contained" size="large"
+                    color="secondary" onClick={onSend}>
                     Send
                 </Button>
             </Box>
