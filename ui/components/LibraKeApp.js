@@ -1,11 +1,9 @@
-import { Fragment, useState } from "react"
+import { Fragment, useState, useEffect } from "react"
 import {
-    AppBar, Toolbar, Typography,
-    Grid, Box, Button, CircularProgress
+    AppBar, Toolbar, Typography, Grid, Box, CircularProgress
 } from '@material-ui/core'
 import Axios from 'axios'
-import { Account } from ".";
-import UiRoutes from "../pages/UiRoutes";
+import UiRoutes from "../pages/UiRoutes"
 
 
 const http = Axios.create({ timeout: 1000 * 30 })
@@ -14,18 +12,29 @@ export default () => {
 
     const [isCreatingWallet, setIsCreatingWallet] = useState(false)
     const [acct, setAcct] = useState(null)
+    const [isInitializing, setIsInitializing] = useState(true)
+    const [loadingLabel, setLoadingLabel] = useState("Initializing your account ...")
+
+    useEffect(() => {
+        http.get('/v1/initialize').then(res => {
+            const { data } = res
+            // console.log(data.found)
+            if (data.found) {
+                setAcct(data.account)
+                setIsInitializing(false)
+            } else {
+                setLoadingLabel("Creating a new account ...")
+                http.post("/v1/createwallet").then(res => {
+                    setAcct(res.data)
+                    setIsInitializing(false)
+                    // console.log(res.data)
+                }).catch(e => console.log(e))
+            }
+        })
+    }, [])
 
     const handleCreateWallet = () => {
         setIsCreatingWallet(true)
-
-        http.post("/v1/createwallet").then(res => {
-            setAcct(res.data)
-            setIsCreatingWallet(false)
-        }).catch(e => console.log(e))
-    }
-
-    const handleSend = () => {
-        history.go('/send')
     }
 
     return (
@@ -37,15 +46,15 @@ export default () => {
                 <Toolbar>
                     <Grid container>
                         <Grid item md={5}>
-                            <Typography variant="h6" color="textSecondary">Libra.Org.KE</Typography>
+                            <Typography variant="h6" color="textSecondary">Libra KE POC Wallet</Typography>
                         </Grid>
-                        <Grid item md={7}>
+                        {/*<Grid item md={7}>
                             <Box display="flex" flexDirection="row">
                                 <Box pr={2}>Home</Box>
                                 <Box pr={2}>Stats</Box>
                                 <Box pr={2}>Wallet</Box>
                             </Box>
-                        </Grid>
+                            </Grid>*/}
                     </Grid>
                 </Toolbar>
             </AppBar>
@@ -58,11 +67,20 @@ export default () => {
                     borderRadius={2}
                     justifyContent="center"
                     alignItems="center">
-                    <UiRoutes
-                        isCreatingWallet={isCreatingWallet}
-                        onCreateWallet={handleCreateWallet}
-                        account={acct}
-                    />
+                    {isInitializing ? (
+                        <Fragment>
+                            <Box>
+                                <CircularProgress size={32} />
+                            </Box>
+                            <Box>
+                                <Typography variant="body1">{loadingLabel}</Typography>
+                            </Box>
+                        </Fragment>) : (
+                            <UiRoutes
+                                isCreatingWallet={isCreatingWallet}
+                                onCreateWallet={handleCreateWallet}
+                                account={acct}
+                            />)}
                 </Box>
             </Box>
         </Fragment>

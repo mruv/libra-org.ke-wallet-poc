@@ -3,6 +3,7 @@ require('dotenv').config()
 const { streamWrite, streamEnd, onExit, chunksToLinesAsync, chomp } = require('@rauschma/stringio')
 const bodyParser = require('body-parser')
 const express = require('express')
+const session = require('express-session')
 const path = require('path')
 
 const app = express()
@@ -13,6 +14,9 @@ const { spawn } = require('child_process')
 
 app.use(bodyParser.json())
 app.use(cors())
+app.use(session(
+    {'secret': 'HHgsggsysalllkTThsg667ffsgagHgJkd'}
+))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -31,12 +35,21 @@ app.get('/', function (req, res, next) {
     res.render('index')
 })
 
+app.get("/v1/initialize", (req, res) => {
+
+    if (req.session.account) {
+        res.json({found: true, account : req.session.account})
+    } else {
+        res.json({found : false})
+    }
+})
+
 // Create a Libra address and Mint some 200 coins
 app.post('/v1/createwallet', async (req, res) => {
 
     const libra_cli = spawn(
         'docker', ['run', '--mount', `type=bind,source=${__dirname}/wallet,target=/libravolume`, '--rm', '-i', 'libra_client'],
-        {stdio: ['pipe', 'pipe', process.stderr]})
+        { stdio: ['pipe', 'pipe', process.stderr] })
 
     await sleep(1000)
     await streamWrite(libra_cli.stdin, 'account create\n')
@@ -62,7 +75,11 @@ app.post('/v1/createwallet', async (req, res) => {
     // wait till the container has stopped
     await sleep(3000)
 
-    res.json({ address: address, balance: bal })
+    const account = { address: address, balance: bal }
+    // keep track
+    req.session.account = account
+
+    res.json(account)
 })
 
 // Transfer some coins

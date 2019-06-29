@@ -1,7 +1,7 @@
-import { Box, ListItemText, Button } from "@material-ui/core"
+import { Box, ListItemText, Button, Typography } from "@material-ui/core"
 
 
-export default ({ address, balance }) => {
+export default ({ address, balance, onSend }) => {
 
     return (
         <Box
@@ -10,13 +10,23 @@ export default ({ address, balance }) => {
             minWidth="75%"
             justifyContent="center">
             <Box p={1}>
+                <Typography variant="h4" color="textPrimary">
+                    My Account
+                </Typography>
+            </Box>
+            <Box p={1}>
                 <ListItemText primary="Address" secondary={address} />
             </Box>
             <Box p={1}>
                 <ListItemText primary="Balance" secondary={balance} />
             </Box>
             <Box p={1}>
-                <Button fullWidth variant="contained" size="large" color="secondary">
+                <Button
+                    fullWidth
+                    variant="contained"
+                    size="large"
+                    color="secondary"
+                    onClick={onSend}>
                     Send
                 </Button>
             </Box>
