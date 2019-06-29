@@ -101,22 +101,23 @@ app.post("/v1/send", async (req, res) => {
     await streamWrite(libra_cli.stdin, `transfer 0 ${rcvrAddress} ${amount}\n`)
     await sleep(2000)
     await streamWrite(libra_cli.stdin, `query balance 0\n`)
-    await sleep(2000)
+    await sleep(1000)
     await streamWrite(libra_cli.stdin, 'quit\n')
-    await sleep(2000)
+    await sleep(1000)
 
     let newBalance
     for await (const line of chunksToLinesAsync(libra_cli.stdout)) {
         if (-1 != line.search("Balance is: ")) {
             newBalance = line.split('Balance is: ')[1].replace('\n', '')
         }
-        console.log(line)
+        // console.log(line)
     }
+
 
     if (newBalance == balance) {
         res.json({ isSuccess: false })
     } else {
-        req.session.account = { ...req.session.account, balance: newBalance }
+        req.session.account.balance = newBalance
         res.json({ isSuccess: true, account: req.session.account })
     }
 })
