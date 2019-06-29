@@ -103,7 +103,7 @@ app.post("/v1/send", async (req, res) => {
     await streamWrite(libra_cli.stdin, `query balance 0\n`)
     await sleep(1000)
     await streamWrite(libra_cli.stdin, 'quit\n')
-    await sleep(1000)
+    await sleep(2000)
 
     let newBalance
     for await (const line of chunksToLinesAsync(libra_cli.stdout)) {
