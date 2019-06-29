@@ -108,10 +108,10 @@ app.post("/v1/send", async (req, res) => {
             await streamWrite(libra_cli.stdin, 'q!\n')
             await sleep(1000)
         }
-        console.log(line)
+        // console.log(line)
     }
 
-    console.log("BALANCE : ", newBalance)
+    // console.log("BALANCE : ", newBalance)
     if (newBalance == balance) {
         res.json({ isSuccess: false })
     } else {
