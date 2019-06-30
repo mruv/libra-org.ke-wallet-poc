@@ -52,28 +52,29 @@ app.post('/v1/createwallet', async (req, res) => {
         { stdio: ['pipe', 'pipe', process.stderr] })
 
     await sleep(1000)
+    await streamWrite(libra_cli.stdin, `account recover /libravolume/client.mnemonic\n`)
+    await sleep(1000)
     await streamWrite(libra_cli.stdin, 'account create\n')
-    await sleep(1000)
-    await streamWrite(libra_cli.stdin, `account mint 0 20000\n`)
-    await sleep(1000)
-    await streamWrite(libra_cli.stdin, `query balance 0\n`)
     await sleep(1000)
 
     let address, bal
     for await (const line of chunksToLinesAsync(libra_cli.stdout)) {
-        if (-1 != line.search("Created/retrieved account #0")) {
-            address = line.split('account #0 address ')[1].replace('\n', '')
-            await streamWrite(libra_cli.stdin, `account write /libravolume/${address}\n`)
+        if (-1 != line.search("Created/retrieved account #")) {
+            address = line.split('address ')[1].replace('\n', '')
+            await streamWrite(libra_cli.stdin, `account mint ${address} 200000\n`)
+            await sleep(1000)
+            await streamWrite(libra_cli.stdin, `query balance ${address}\n`)
+            await sleep(1000)
+            await streamWrite(libra_cli.stdin, `account write /libravolume/client.mnemonic\n`)
             await sleep(1000)
             await streamWrite(libra_cli.stdin, 'quit\n')
+            await sleep(2000)
         } else if (-1 != line.search("Balance is: ")) {
             bal = line.split('Balance is: ')[1].replace('\n', '')
         }
-        // console.log(line)
+        console.log(line)
     }
 
-    // wait till the container has stopped
-    await sleep(3000)
     const account = { address: address, balance: bal }
     // keep track
     req.session.account = account
@@ -92,20 +93,20 @@ app.post("/v1/send", async (req, res) => {
         { stdio: ['pipe', 'pipe', process.stderr] })
 
     await sleep(1000)
-    await streamWrite(libra_cli.stdin, `a r /libravolume/${address}\n`)
+    await streamWrite(libra_cli.stdin, `account recover /libravolume/client.mnemonic\n`)
     await sleep(1000)
-    await streamWrite(libra_cli.stdin, `t 0 0 0\n`)
+    await streamWrite(libra_cli.stdin, `transfer ${address} ${address} 0\n`)
     await sleep(2000)
-    await streamWrite(libra_cli.stdin, `t 0 ${rcvrAddress} ${amount}\n`)
+    await streamWrite(libra_cli.stdin, `transfer ${address} ${rcvrAddress} ${amount}\n`)
     await sleep(2000)
-    await streamWrite(libra_cli.stdin, `q b 0\n`)
+    await streamWrite(libra_cli.stdin, `query balance ${address}\n`)
     await sleep(1000)
 
     let newBalance
     for await (const line of chunksToLinesAsync(libra_cli.stdout)) {
         if (-1 != line.search("Balance is: ")) {
             newBalance = line.split('Balance is: ')[1].replace('\n', '')
-            await streamWrite(libra_cli.stdin, 'q!\n')
+            await streamWrite(libra_cli.stdin, 'quit\n')
             await sleep(1000)
         }
         // console.log(line)
