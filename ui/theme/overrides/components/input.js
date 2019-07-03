@@ -3,9 +3,10 @@ export default (theme) => {
     return {
         MuiInput: {
             root: {
-                // height: 'auto',
-                fontSize: 14,
+                height: 'auto',
+                fontSize: 13,
                 fontWeight: 400,
+                // color: theme.palette.textPrimary,
                 /*[`& .${ICON.root}, & input::placeholder`]: {
                     color: '#657786',
                     opacity: 1,

@@ -3,17 +3,17 @@ export default (theme) => {
         MuiButton: {
             root: {
                 fontSize: 13, margin: theme.spacing(0),
-                padding: '3px 10px 3px 10px',
+                // padding: '3px 10px 3px 10px',
                 borderRadius: 20,
                 minHeight: 'auto',
             },
             label: {
                 textTransform: 'none',
-                fontSize: 12,
-                fontWeight: 400,
+                //fontSize: 12,
+                fontWeight: 500,
             },
             outlined: {
-                padding: '3px 10px',
+                // padding: '3px 10px',
             },
             outlinedPrimary: {
                 borderColor: theme.palette.primary.main,

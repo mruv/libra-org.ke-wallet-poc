@@ -5,13 +5,14 @@ export default (theme) => {
         MuiAvatar: {
             root: {
                 //backgroundColor: '#e6ecf0' 
-                backgroundColor: theme.palette.grey[400],
+                backgroundColor: '#fff',
                 color: theme.palette.secondary.light,
+                borderRadius: 0
             },
             colorDefault: {
                 // backgroundColor: theme.palette.grey[400],
-                backgroundColor: '#e6ecf0',
-                color: theme.palette.secondary.light,
+                backgroundColor: '#fff',
+                color: '#000',
             }
         }
     }
