@@ -1,16 +1,11 @@
-import { Account } from '../components'
+import LibraKePocWallet from '../LibraKePocWallet'
+import { CreateAccount, MyAccount } from '../components'
 
-export default ({ account, history }) => {
-
-    // console.log(history)
-    const handleSend = () => {
-        history.push('/send')
-    }
+export default ({ history }) => {
 
     return (
-        <Account
-            onSend={handleSend}
-            address={account.address}
-            balance={account.balance} />
+        <LibraKePocWallet.AccountContext.Consumer>
+            {({ account }) => account ? <MyAccount history={history} /> : <CreateAccount />}
+        </LibraKePocWallet.AccountContext.Consumer>
     )
 }

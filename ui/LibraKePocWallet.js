@@ -1,8 +1,8 @@
-import { FullScreenContainer, MyAccount } from "./components"
+import { FullScreenContainer } from "./components"
 import { Switch as RouterSwitch, Route, Redirect } from "react-router"
 import { createContext, useReducer, useEffect } from 'react'
 import { loadCSS } from 'fg-loadcss'
-import { SendLibra } from "./pages"
+import { Home, SendLibra, ReceiveLibra } from "./pages"
 
 const setLibraAccount = (state, newAcct) => newAcct
 const LibraAccountContext = createContext(null)
@@ -27,8 +27,9 @@ const LibraKePocWallet = () => {
             <LibraAccountContext.Provider
                 value={{ account: libraAccount, setAccount: setLibraAccountDispatch }}>
                 <RouterSwitch>
-                    <Route path="/" exact render={() => <SendLibra />} />
-                    <Route path="/send" render={() => <p>send</p>} />
+                    <Route path="/" exact render={(props) => <Home {...props} />} />
+                    <Route path="/send" render={(props) => <SendLibra {...props} />} />
+                    <Route path="/receive" render={(props) => <ReceiveLibra {...props} />} />
                     <Route render={() => <Redirect to="/" />} />
                 </RouterSwitch>
             </LibraAccountContext.Provider>

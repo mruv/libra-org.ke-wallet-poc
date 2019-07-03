@@ -12,32 +12,32 @@ export default (theme) => {
             },
             gutters: {
                 [theme.breakpoints.up('sm')]: {
-                    padding: '10px 15px',
-                    paddingLeft: 10,
-                    paddingRight: 10,
+                    padding: '8px 16px',
+                    paddingLeft: 5,
+                    paddingRight: 5,
                 },
             },
         },
         MuiListItemText: {
             root: {
-                fontSize: 13,
-                padding: '3px 5px 3px 10px',
+                fontSize: 12,
+                padding: '8px',
             },
         },
         primary: {
-            fontWeight: 400,
+            fontWeight: 600,
             lineHeight: 1.3125,
         },
         secondary: {
             lineHeight: 1.3125,
-            color: '#657786',
+            // color: '#657786',
         },
         MuiListItem: {
             root: {
                 userSelect: 'initial',
-                background: "#fff",
+                // background: "#fff",
                 '&$focusVisible': {
-                    backgroundColor: 'rgba(230, 236, 240, 0.7)',
+                    // backgroundColor: 'rgba(230, 236, 240, 0.7)',
                 }
             },
             /*gutters: {

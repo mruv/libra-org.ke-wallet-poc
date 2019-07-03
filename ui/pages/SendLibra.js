@@ -2,7 +2,7 @@ import { Fragment, useState } from "react"
 import { Box, TextField, Button, Icon } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
 import classNames from 'classnames'
-import { ErrorRounded, ErrorOutlineRounded, DoneOutlineRounded } from "@material-ui/icons"
+import { ErrorOutlineRounded } from "@material-ui/icons"
 
 const useStyles = makeStyles(theme => ({
     button: {
@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default () => {
+export default ({ history }) => {
 
     const classes = useStyles()
     const [formConf, setFormConf] = useState({ email: "", phone: "", address: "" })
@@ -23,6 +23,8 @@ export default () => {
         const { name, value } = target
         setFormConf({ ...formConf, [name]: value })
     }
+
+    const onCancel = e => history.goBack()
 
     return (
         <Fragment>
@@ -60,7 +62,7 @@ export default () => {
                 </Button>
             </Box>
             <Box p={2} width="80%">
-                <Button fullWidth size="small" variant="contained" color="default">
+                <Button onClick={onCancel} fullWidth size="small" variant="contained" color="default">
                     <ErrorOutlineRounded fontSize="small" className={classes.leftIcon} />
                     Cancel
                 </Button>
