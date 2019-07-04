@@ -3,24 +3,31 @@ import { Switch as RouterSwitch, Route, Redirect } from "react-router"
 import { createContext, useReducer, useEffect } from 'react'
 import { loadCSS } from 'fg-loadcss'
 import { Home, SendLibra, ReceiveLibra } from "./pages"
+import Axios from "axios"
 
 const setLibraAccount = (state, newAcct) => newAcct
 const LibraAccountContext = createContext(null)
 
 const LibraKePocWallet = () => {
 
-    const [libraAccount, setLibraAccountDispatch] = useReducer(setLibraAccount,
-        {
-            address: "987092e9a29cc9579189d0bb38187e609216ed86ab7abd3a95025fad44f2e139",
-            balance: "200000.000000"
-        })
+    useEffect(() => {
+        loadCSS(
+            'https://use.fontawesome.com/releases/v5.1.0/css/all.css',
+            document.querySelector('#font-awesome-css'),
+        );
+    }, [])
+
+    const [libraAccount, setLibraAccountDispatch] = useReducer(setLibraAccount, null)
 
     useEffect(() => {
-            loadCSS(
-              'https://use.fontawesome.com/releases/v5.1.0/css/all.css',
-              document.querySelector('#font-awesome-css'),
-            );
-          }, [])
+
+        Axios.get('/v1/initialize').then(res => {
+            const { found, account = null} = res.data
+            if (found) {
+                setLibraAccountDispatch(account)
+            }
+        })
+    }, [])
 
     return (
         <FullScreenContainer>

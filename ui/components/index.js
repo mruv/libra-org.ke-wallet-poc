@@ -1,5 +1,5 @@
 export { default as SendForm } from './SendForm'
-export { default as SendLoader } from './SendLoader'
+export { default as Progress } from './Progress'
 export { default as SendDone } from './SendDone'
 export { default as FullScreenContainer } from './FullScreenContainer'
 export { default as CreateAccount } from './CreateAccount'

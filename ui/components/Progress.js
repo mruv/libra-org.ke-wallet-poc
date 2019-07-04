@@ -1,6 +1,6 @@
 import { Box, CircularProgress, Typography } from "@material-ui/core"
 
-export default () => {
+export default ({ label }) => {
     return (
         <Box
             display="flex"
@@ -12,7 +12,7 @@ export default () => {
                 <CircularProgress size={48} />
             </Box>
             <Box p={2}>
-                <Typography variant="body1">Sending ...</Typography>
+                <Typography variant="body1">{ label }</Typography>
             </Box>
         </Box >
     )

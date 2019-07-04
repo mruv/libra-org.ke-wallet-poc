@@ -5,7 +5,9 @@ export default ({ history }) => {
 
     return (
         <LibraKePocWallet.AccountContext.Consumer>
-            {({ account }) => !account ? <MyAccount history={history} /> : <CreateAccount />}
+            {({ account, setAccount }) => account ? (
+                <MyAccount history={history} account={account} setAccount={setAccount} />) : (
+                    <CreateAccount account={account} setAccount={setAccount} />)}
         </LibraKePocWallet.AccountContext.Consumer>
     )
 }

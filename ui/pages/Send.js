@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Axios from 'axios'
-import { SendForm, SendDone, SendLoader } from '../components'
+import { SendForm, SendDone, SendLoader, Progress } from '../components'
 
 Axios.defaults.timeout = 1000 * 30
 
@@ -45,7 +45,7 @@ export default ({ myBal, history, updateAccount }) => {
     }
 
     if (isSending)
-        return <SendLoader />
+        return <Progress label="Sending Libra ..." />
 
     if (isSent) {
         return <SendDone isSuccess={isSuccess} onGoBack={handleGoBack} />

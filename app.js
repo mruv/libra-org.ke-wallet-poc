@@ -56,7 +56,6 @@ app.get("/v1/initialize", (req, res) => {
 app.post('/v1/accounts', async (req, res) => {
 
     const { mobileNumber, emailAddress } = req.body
-
     const libra_cli = getLibraCli()
 
     await sleep(1000)
@@ -80,7 +79,6 @@ app.post('/v1/accounts', async (req, res) => {
         } else if (-1 != line.search("Balance is: ")) {
             bal = line.split('Balance is: ')[1].replace('\n', '')
         }
-        // console.log(line)
     }
 
     // persist
@@ -97,7 +95,7 @@ app.post('/v1/accounts', async (req, res) => {
         emailAddress: emailAddress
     }
 
-    res.json(req.session.account)
+    res.status(201).json(req.session.account)
 })
 
 // Refresh account balance
