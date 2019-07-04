@@ -5,6 +5,7 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const session = require('express-session')
 const path = require('path')
+const { LibraAccount, connectToDb } = require('./mongodb')
 
 const app = express()
 const cors = require('cors')
@@ -44,8 +45,10 @@ app.get("/v1/initialize", (req, res) => {
     }
 })
 
-// Create a Libra address and Mint some 200 coins
-app.post('/v1/createwallet', async (req, res) => {
+// Create a Libra account and Mint some 200 coins
+app.post('/v1/accounts', async (req, res) => {
+
+    const { mobileNumber, emailAddress } = req.body
 
     const libra_cli = spawn(
         'docker', ['run', '--mount', `type=bind,source=${__dirname}/wallet,target=/libravolume`, '--rm', '-i', 'libra_client'],
@@ -75,10 +78,21 @@ app.post('/v1/createwallet', async (req, res) => {
         // console.log(line)
     }
 
-    const account = { address: address, balance: bal }
-    // keep track
-    req.session.account = account
-    res.json(account)
+    // persist
+    const newAccount = new LibraAccount({
+        mobileNumber: mobileNumber,
+        emailAddress: emailAddress,
+        address: address
+    })
+    await newAccount.save()
+    req.session.account = {
+        address: address,
+        balance: bal,
+        mobileNumber: mobileNumber,
+        emailAddress: emailAddress
+    }
+
+    res.json(req.session.account)
 })
 
 // Transfer some coins
@@ -120,7 +134,10 @@ app.post("/v1/send", async (req, res) => {
     }
 })
 
-// start service
-app.listen(PORT, HOST, () => {
-    console.log(`Server is running on ${HOST} PORT: ${PORT}`)
+// connect to MongoDB first
+connectToDb().then(async () => {
+    // start service
+    app.listen(PORT, HOST, () => {
+        console.log(`Server is running on ${HOST} PORT: ${PORT}`)
+    })
 })
