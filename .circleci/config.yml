@@ -35,9 +35,7 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-
-      # run tests!
-      # - run: yarn test
+          
       - run: npm start
 
   deploy:
@@ -45,15 +43,8 @@ jobs:
     machine:
       enabled: true
 
-    # working_directory: /home/reuben/LIBRA/libra-org.ke-wallet-poc
-
     steps:
-      - run: |
-        ssh reuben@46.4.97.243 cd /home/reuben/LIBRA/libra-org.ke-wallet-poc && git pull && npm install && kill -9 `pgrep node` && npm start
-      # stop all node processes
-      # - run: kill -9 `pgrep node`
-      # - run: npm install
-      # - run: npm start
+      - run: ssh reuben@46.4.97.243 'cd /home/reuben/LIBRA/libra-org.ke-wallet-poc && git pull && npm install && kill -9 `pgrep node` && npm start'
 
 workflows:
 
