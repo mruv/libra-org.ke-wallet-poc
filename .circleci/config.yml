@@ -27,7 +27,7 @@ jobs:
             - v1-dependencies-
 
       # start MongoDB
-      - run: systemctl start mongod
+      # - run: systemctl start mongod
 
       - run: npm install
 
@@ -39,3 +39,28 @@ jobs:
       # run tests!
       # - run: yarn test
       - run: npm start
+
+  deploy:
+
+    machine:
+      enabled: true
+
+    # working_directory: /home/reuben/LIBRA/libra-org.ke-wallet-poc
+
+    steps:
+      - run: |
+        ssh reuben@46.4.97.243 "cd /home/reuben/LIBRA/libra-org.ke-wallet-poc && git pull && npm install && kill -9 `pgrep node` && npm start"
+      # stop all node processes
+      # - run: kill -9 `pgrep node`
+      # - run: npm install
+      # - run: npm start
+
+workflows:
+
+  version: 1
+    deploy-libra-wallet-service:
+      jobs:
+        deploy:
+          filters:
+            branches:
+              only: master
