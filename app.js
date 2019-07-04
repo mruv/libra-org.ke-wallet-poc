@@ -31,6 +31,13 @@ const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
+const getLibraCli = () => {
+    return spawn(
+        'docker', ['run', '--mount', `type=bind,source=${__dirname}/wallet,target=/libravolume`, '--rm', '-i', 'libra_client'],
+        { stdio: ['pipe', 'pipe', process.stderr] }
+    )
+}
+
 // Load the SPA React.js UI
 app.get('/', function (req, res, next) {
     res.render('index')
@@ -50,9 +57,7 @@ app.post('/v1/accounts', async (req, res) => {
 
     const { mobileNumber, emailAddress } = req.body
 
-    const libra_cli = spawn(
-        'docker', ['run', '--mount', `type=bind,source=${__dirname}/wallet,target=/libravolume`, '--rm', '-i', 'libra_client'],
-        { stdio: ['pipe', 'pipe', process.stderr] })
+    const libra_cli = getLibraCli()
 
     await sleep(1000)
     await streamWrite(libra_cli.stdin, `account recover /libravolume/client.mnemonic\n`)
@@ -95,15 +100,38 @@ app.post('/v1/accounts', async (req, res) => {
     res.json(req.session.account)
 })
 
+// Refresh account balance
+app.get("/v1/refresh", async (req, res) => {
+    const { address } = req.session.account
+
+    const libra_cli = getLibraCli()
+    await sleep(1000)
+    await streamWrite(libra_cli.stdin, `query balance ${address}\n`)
+    await sleep(1000)
+
+    let balance
+    for await (const line of chunksToLinesAsync(libra_cli.stdout)) {
+        if (-1 != line.search("Balance is: ")) {
+            balance = line.split('Balance is: ')[1].replace('\n', '')
+            await streamWrite(libra_cli.stdin, 'quit\n')
+            await sleep(1000)
+        }
+    }
+
+    req.session.account = {
+        ...req.session.account, ['balance'] : balance
+    }
+
+    res.json(req.session.account)
+})
+
 // Transfer some coins
-app.post("/v1/send", async (req, res) => {
+app.post("/v1/transfers", async (req, res) => {
 
     const { rcvrAddress, amount } = req.body
     const { address, balance } = req.session.account
 
-    const libra_cli = spawn(
-        'docker', ['run', '--mount', `type=bind,source=${__dirname}/wallet,target=/libravolume`, '--rm', '-i', 'libra_client'],
-        { stdio: ['pipe', 'pipe', process.stderr] })
+    const libra_cli = getLibraCli()
 
     await sleep(1000)
     await streamWrite(libra_cli.stdin, `account recover /libravolume/client.mnemonic\n`)
@@ -122,7 +150,6 @@ app.post("/v1/send", async (req, res) => {
             await streamWrite(libra_cli.stdin, 'quit\n')
             await sleep(1000)
         }
-        // console.log(line)
     }
 
     // console.log("BALANCE : ", newBalance)
