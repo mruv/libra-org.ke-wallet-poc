@@ -49,7 +49,7 @@ jobs:
 
     steps:
       - run: |
-        ssh reuben@46.4.97.243 "cd /home/reuben/LIBRA/libra-org.ke-wallet-poc && git pull && npm install && kill -9 `pgrep node` && npm start"
+        ssh reuben@46.4.97.243 cd /home/reuben/LIBRA/libra-org.ke-wallet-poc && git pull && npm install && kill -9 `pgrep node` && npm start
       # stop all node processes
       # - run: kill -9 `pgrep node`
       # - run: npm install
