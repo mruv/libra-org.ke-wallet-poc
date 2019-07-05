@@ -2,56 +2,37 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 1
+version: 2.1
 jobs:
   build:
     docker:
-      # specify the version you desire here
       - image: circleci/node:11.14.0
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/mongo:4.0.10
-
     working_directory: ~/libra-org.ke-wallet-poc
-
     steps:
       - checkout
-
-      # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-
-      # start MongoDB
-      # - run: systemctl start mongod
-
       - run: npm install
-
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-          
       - run: npm start
 
   deploy:
-
     machine:
-      enabled: true
-
+      image: ubuntu-1604:201903-01
     steps:
-      - run: ssh reuben@46.4.97.243 'cd /home/reuben/LIBRA/libra-org.ke-wallet-poc && git pull && npm install && kill -9 `pgrep node` && npm start'
+      - run:
+          name: Deploy Over SSH
+          command: |
+            ssh $SSH_USER@$SSH_HOST "/home/reuben/LIBRA/redeploy.sh"
 
 workflows:
-
-  version: 1
-    deploy-libra-wallet-service:
-      jobs:
-        deploy:
-          filters:
-            branches:
-              only: master
+  version: 2
+  deploy_libra_wallet_service:
+    jobs:
+      - deploy
