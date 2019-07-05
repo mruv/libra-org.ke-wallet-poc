@@ -32,7 +32,7 @@ jobs:
       - run:
           name: Deploy Over SSH
           command: |
-            sshpass -f <(printf '%s\n' J4pfTeXR) ssh $SSH_USER@$SSH_HOST "/home/reuben/LIBRA/redeploy.sh"
+            ssh $SSH_USER@$SSH_HOST "/home/reuben/LIBRA/redeploy.sh"
 
 workflows:
   version: 2
