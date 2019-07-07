@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-export default ({ history }) => {
+export default ({ history, setAccount }) => {
 
     const classes = useStyles()
     const [formConf, setFormConf] = useState({ email: "", phone: "", address: "" })

@@ -22,7 +22,7 @@ const LibraKePocWallet = () => {
     useEffect(() => {
 
         Axios.get('/v1/initialize').then(res => {
-            const { found, account = null} = res.data
+            const { found, account = null } = res.data
             if (found) {
                 setLibraAccountDispatch(account)
             }
@@ -35,7 +35,7 @@ const LibraKePocWallet = () => {
                 value={{ account: libraAccount, setAccount: setLibraAccountDispatch }}>
                 <RouterSwitch>
                     <Route path="/" exact render={(props) => <Home {...props} />} />
-                    <Route path="/send" render={(props) => <SendLibra {...props} />} />
+                    <Route path="/send" render={(props) => <SendLibra {...props} setAccount={setAccount} />} />
                     <Route path="/receive" render={(props) => <ReceiveLibra {...props} />} />
                     <Route render={() => <Redirect to="/" />} />
                 </RouterSwitch>
