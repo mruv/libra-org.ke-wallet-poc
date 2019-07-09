@@ -4,6 +4,9 @@ import { LibraSvgIcon } from "."
 import { SendOutlined, RefreshOutlined } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
 import classNames from 'classnames'
+import Axios from "axios"
+
+Axios.defaults.timeout = 1000 * 30
 
 const useStyles = makeStyles(theme => ({
     button: {
@@ -36,6 +39,17 @@ export default ({ history, account, setAccount }) => {
 
     const onSendLibra = e => history.push('/send')
     const onReceiveLibra = e => history.push('/receive')
+
+    const onRefresh = e => {
+        Axios.get("/v1/refresh").then(res => {
+            if (res.status == 200) {
+                setAccount(res.data)
+            } else if (res.status == 401) {
+                setAccount(null)
+                history.push('/')
+            }
+        })
+    }
 
     return (
         <Fragment>
@@ -76,7 +90,7 @@ export default ({ history, account, setAccount }) => {
                     </Box>
                 </Box>
                 <Box>
-                    <Button variant="text" size="small" style={{ paddingLeft: 0, }}>
+                    <Button variant="text" size="small" style={{ paddingLeft: 0, }} onClick={onRefresh}>
                         <RefreshOutlined
                             fontSize="small"
                             style={{ fontWeight: 500, fontSize: 11, color: '#aaa' }} />

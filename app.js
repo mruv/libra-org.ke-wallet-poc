@@ -100,34 +100,55 @@ app.post('/v1/accounts', async (req, res) => {
 
 // Refresh account balance
 app.get("/v1/refresh", async (req, res) => {
-    const { address } = req.session.account
+    const { address = '' } = req.session.account
 
-    const libra_cli = getLibraCli()
-    await sleep(1000)
-    await streamWrite(libra_cli.stdin, `query balance ${address}\n`)
-    await sleep(1000)
+    if (address) {
+        const libra_cli = getLibraCli()
+        await sleep(1000)
+        await streamWrite(libra_cli.stdin, `query balance ${address}\n`)
+        await sleep(1000)
 
-    let balance
-    for await (const line of chunksToLinesAsync(libra_cli.stdout)) {
-        if (-1 != line.search("Balance is: ")) {
-            balance = line.split('Balance is: ')[1].replace('\n', '')
-            await streamWrite(libra_cli.stdin, 'quit\n')
-            await sleep(1000)
+        let balance
+        for await (const line of chunksToLinesAsync(libra_cli.stdout)) {
+            if (-1 != line.search("Balance is: ")) {
+                balance = line.split('Balance is: ')[1].replace('\n', '')
+                await streamWrite(libra_cli.stdin, 'quit\n')
+                await sleep(1000)
+            }
         }
-    }
 
-    req.session.account = {
-        ...req.session.account, ['balance'] : balance
-    }
+        req.session.account = {
+            ...req.session.account, ['balance']: balance
+        }
 
-    res.json(req.session.account)
+        res.status(200).json(req.session.account)
+    } else {
+        res.status(401)
+    }
 })
 
 // Transfer some coins
 app.post("/v1/transfers", async (req, res) => {
 
-    const { rcvrAddress, amount } = req.body
+    const { type, value, amount } = req.body
     const { address, balance } = req.session.account
+
+    let dstAddr = ''
+    switch (type) {
+        case 'address':
+            dstAddr = value
+            break
+        case 'phone':
+        case 'email':
+            const libraAcct = await LibraAccount.findOne({
+                [type == 'email' ? 'emailAddress' : 'mobileNumber']: value
+            })
+
+            if (libraAcct) {
+                dstAddr = libraAcct.address
+            }
+            break
+    }
 
     const libra_cli = getLibraCli()
 
@@ -136,7 +157,7 @@ app.post("/v1/transfers", async (req, res) => {
     await sleep(1000)
     await streamWrite(libra_cli.stdin, `transfer ${address} ${address} 0\n`)
     await sleep(2000)
-    await streamWrite(libra_cli.stdin, `transfer ${address} ${rcvrAddress} ${amount}\n`)
+    await streamWrite(libra_cli.stdin, `transfer ${address} ${dstAddr} ${amount}\n`)
     await sleep(2000)
     await streamWrite(libra_cli.stdin, `query balance ${address}\n`)
     await sleep(1000)

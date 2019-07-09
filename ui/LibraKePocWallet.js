@@ -4,6 +4,7 @@ import { createContext, useReducer, useEffect } from 'react'
 import { loadCSS } from 'fg-loadcss'
 import { Home, SendLibra, ReceiveLibra } from "./pages"
 import Axios from "axios"
+import { CssBaseline } from "@material-ui/core"
 
 const setLibraAccount = (state, newAcct) => newAcct
 const LibraAccountContext = createContext(null)
@@ -22,7 +23,7 @@ const LibraKePocWallet = () => {
     useEffect(() => {
 
         Axios.get('/v1/initialize').then(res => {
-            const { found, account = null} = res.data
+            const { found, account = null } = res.data
             if (found) {
                 setLibraAccountDispatch(account)
             }
@@ -31,11 +32,12 @@ const LibraKePocWallet = () => {
 
     return (
         <FullScreenContainer>
+            <CssBaseline />
             <LibraAccountContext.Provider
                 value={{ account: libraAccount, setAccount: setLibraAccountDispatch }}>
                 <RouterSwitch>
                     <Route path="/" exact render={(props) => <Home {...props} />} />
-                    <Route path="/send" render={(props) => <SendLibra {...props} />} />
+                    <Route path="/send" render={(props) => <SendLibra {...props} setAccount={setLibraAccountDispatch} />} />
                     <Route path="/receive" render={(props) => <ReceiveLibra {...props} />} />
                     <Route render={() => <Redirect to="/" />} />
                 </RouterSwitch>
