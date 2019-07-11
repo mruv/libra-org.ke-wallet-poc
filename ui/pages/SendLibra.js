@@ -1,7 +1,7 @@
 import { Fragment, useState } from "react"
 import {
     Box, TextField, Button, Icon, Stepper, Step,
-    StepLabel, StepContent, Typography, StepButton
+    StepLabel, StepContent, Typography
 } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
 import classNames from 'classnames'
@@ -42,6 +42,7 @@ export default ({ history, setAccount }) => {
     const [isSubmitted, setIsSubmitted] = useState(false)
     const [isSubmitOk, setIsSubmitOk] = useState(false)
     const [activeStep, setActiveStep] = useState(0)
+
     const onInputChange = name => ({ target }) => {
         const { name, value } = target
         let newFormConf = { ...formConf }
@@ -91,6 +92,16 @@ export default ({ history, setAccount }) => {
         }
     }
 
+    const handleScan = (content) => {
+
+        if (content) {
+            const newFormConf = { ...formConf }
+            newFormConf.address = content
+            setFormConf(newFormConf)
+            // setActiveStep(1)
+        }
+    }
+
     if (isSubmitting) {
         return <Progress label="Processing request ..." />
     } else if (isSubmitted) {
@@ -108,9 +119,9 @@ export default ({ history, setAccount }) => {
                             <Box pb={4} width="100%" border={1}>
                                 <QrReader
                                     delay={100}
-                                    style={{ height: 200, width: 200 }}
+                                    // style={{ height: 200, width: 200 }}
                                     onError={(error) => console.log(error)}
-                                    onScan={(content) => console.log(content)} />
+                                    onScan={handleScan} />
                             </Box>
                             <Box pt={2} width="100%">
                                 <TextField
