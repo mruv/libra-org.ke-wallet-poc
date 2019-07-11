@@ -93,12 +93,14 @@ export default ({ history, setAccount }) => {
     }
 
     const handleScan = (content) => {
-
+        const newFormConf = { ...formConf }
         if (content) {
-            const newFormConf = { ...formConf }
             newFormConf.address = content
             setFormConf(newFormConf)
             // setActiveStep(1)
+        } else {
+            newFormConf.address = "Error occurred"
+            setFormConf(newFormConf)
         }
     }
 
