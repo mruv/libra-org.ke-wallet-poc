@@ -6,8 +6,8 @@ module.exports = {
     entry: './ui/ui.js',
     devtool: 'sourcemaps',
     cache: false,
-    // mode: 'production',
-    mode: 'development',
+    mode: 'production',
+    // mode: 'development',
     output: {
         path: __dirname,
         filename: './public/javascripts/built/bundle.js'
