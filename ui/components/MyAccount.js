@@ -9,21 +9,18 @@ import Axios from "axios"
 Axios.defaults.timeout = 1000 * 30
 
 const useStyles = makeStyles(theme => ({
-    button: {
-        // paddingLeft: theme.spacing(1),
-        backgroundColor: theme.palette.primary.light,
-        // color: '#aaa'
-    },
+    button: { backgroundColor: theme.palette.primary.light, },
     leftIcon: {
         marginRight: theme.spacing(1),
         marginLeft: theme.spacing(1),
     },
     btnLabel: {
-        fontWeight: 500, fontSize: 11, color: '#aaa', marginLeft: theme.spacing(2)
+        fontWeight: 500, 
+        fontSize: 11, 
+        color: '#aaa', 
+        marginLeft: theme.spacing(2)
     },
-    avatar: {
-
-    }
+    avatar: { }
 }))
 
 const formatLibra = amount => {

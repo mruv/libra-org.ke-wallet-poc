@@ -38,7 +38,7 @@ const LibraKePocWallet = () => {
                 <RouterSwitch>
                     <Route path="/" exact render={(props) => <Home {...props} />} />
                     <Route path="/send" render={(props) => <SendLibra {...props} setAccount={setLibraAccountDispatch} />} />
-                    <Route path="/receive" render={(props) => <ReceiveLibra {...props} />} />
+                    <Route path="/receive" render={(props) => <ReceiveLibra account={libraAccount} {...props} />} />
                     <Route render={() => <Redirect to="/" />} />
                 </RouterSwitch>
             </LibraAccountContext.Provider>

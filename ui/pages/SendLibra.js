@@ -7,7 +7,8 @@ import { makeStyles } from "@material-ui/styles"
 import classNames from 'classnames'
 import { ErrorOutlineRounded } from "@material-ui/icons"
 import Axios from "axios"
-import { Progress, SendDone } from "../components";
+import { Progress, SendDone } from "../components"
+import QrReader from 'react-qr-scanner'
 
 Axios.defaults.timeout = 1000 * 30
 
@@ -104,8 +105,12 @@ export default ({ history, setAccount }) => {
                     <Step>
                         <StepLabel>Select Mode</StepLabel>
                         <StepContent>
-                            <Box pb={4} width="100%" border={1} height={100}>
-
+                            <Box pb={4} width="100%" border={1}>
+                                <QrReader
+                                    delay={100}
+                                    style={{ height: 200, width: 200 }}
+                                    onError={(error) => console.log(error)}
+                                    onScan={(content) => console.log(content)} />
                             </Box>
                             <Box pt={2} width="100%">
                                 <TextField
