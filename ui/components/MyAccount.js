@@ -1,5 +1,5 @@
-import { Fragment } from "react"
-import { Box, Typography, Icon, Button } from "@material-ui/core"
+import { Fragment, useState } from "react"
+import { Box, Typography, Icon, Button, IconButton, Fab, CircularProgress } from "@material-ui/core"
 import { LibraSvgIcon } from "."
 import { SendOutlined, RefreshOutlined } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
@@ -15,12 +15,36 @@ const useStyles = makeStyles(theme => ({
         marginLeft: theme.spacing(1),
     },
     btnLabel: {
-        fontWeight: 500, 
-        fontSize: 11, 
-        color: '#aaa', 
+        fontWeight: 500,
+        fontSize: 11,
+        color: '#aaa',
         marginLeft: theme.spacing(2)
     },
-    avatar: { }
+    wrapper: {
+        margin: theme.spacing(1),
+        position: 'relative',
+    },
+    buttonSuccess: {
+        //backgroundColor: green[500],
+        //'&:hover': {
+        //    backgroundColor: green[700],
+        //},
+    },
+    fabProgress: {
+        // color: green[500],
+        position: 'absolute',
+        top: -6,
+        left: -6,
+        zIndex: 1,
+    },
+    buttonProgress: {
+        // color: green[500],
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        marginTop: -12,
+        marginLeft: -12,
+    },
 }))
 
 const formatLibra = amount => {
@@ -34,10 +58,12 @@ export default ({ history, account, setAccount }) => {
 
     const classes = useStyles()
 
+    const [isRefreshing, setIsRefreshing] = useState(false)
     const onSendLibra = e => history.push('/send')
     const onReceiveLibra = e => history.push('/receive')
 
     const onRefresh = e => {
+        setIsRefreshing(true)
         Axios.get("/v1/refresh").then(res => {
             if (res.status == 200) {
                 setAccount(res.data)
@@ -45,6 +71,7 @@ export default ({ history, account, setAccount }) => {
                 setAccount(null)
                 history.push('/')
             }
+            setIsRefreshing(false)
         })
     }
 
@@ -75,28 +102,34 @@ export default ({ history, account, setAccount }) => {
                 <Box>
                     <Typography variant="body2"
                         style={{ letterSpacing: 0, color: '#aaa', fontWeight: 400, fontSize: 13 }}>
-                        Current balance
-            </Typography>
+                        {"Current balance"}
+                    </Typography>
                 </Box>
-                <Box alignItems="center" display="flex">
-                    <Box pr={1}><LibraSvgIcon /></Box>
-                    <Box>
-                        <Typography variant="h4">
-                            {formatLibra(account.balance)}
-                        </Typography>
+                <Box
+                    alignItems="center"
+                    display="flex"
+                    justifyContent="space-between">
+                    <Box
+                        alignItems="center"
+                        display="flex"
+                        flexGrow={1}
+                        justifyContent="flex-start">
+                        <Box pr={1}><LibraSvgIcon /></Box>
+                        <Box>
+                            <Typography variant="h4">
+                                {formatLibra(account.balance)}
+                            </Typography>
+                        </Box>
                     </Box>
-                </Box>
-                <Box>
-                    <Button variant="text" size="small" style={{ paddingLeft: 0, }} onClick={onRefresh}>
-                        <RefreshOutlined
-                            fontSize="small"
-                            style={{ fontWeight: 500, fontSize: 11, color: '#aaa' }} />
-                        <Typography
-                            variant="body1"
-                            style={{ paddingLeft: "8px", fontWeight: 500, fontSize: 11, color: '#aaa' }}>
-                            Click to Refresh
-                </Typography>
-                    </Button>
+                    <Box>
+                        {isRefreshing ? <CircularProgress size={34} /> :
+                            <Fab
+                                color="primary" size="small"
+                                aria-label="Refresh" onClick={onRefresh}>
+                                <RefreshOutlined fontSize="small" />
+                            </Fab>
+                        }
+                    </Box>
                 </Box>
             </Box>
             <Box width="100%" mb={2}>
@@ -120,7 +153,7 @@ export default ({ history, account, setAccount }) => {
             <Box width="100%" mb={2}>
                 <Button variant="contained" fullWidth color="primary" className={classes.button}>
                     <Icon fontSize="small" className={classNames("fas fa-money-bill-wave", classes.leftIcon)} />
-                    Send to M-Pesa
+                    Send to M-Pesa (Coming soon)
         </Button>
                 <Typography variant="body2" className={classes.btnLabel}>
                     Exchange your Libra via M-Pesa

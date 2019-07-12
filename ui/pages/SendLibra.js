@@ -93,12 +93,11 @@ export default ({ history, setAccount }) => {
     }
 
     const handleScan = (content) => {
-
         if (content) {
             const newFormConf = { ...formConf }
             newFormConf.address = content
             setFormConf(newFormConf)
-            // setActiveStep(1)
+            setActiveStep(1)
         }
     }
 
@@ -118,8 +117,7 @@ export default ({ history, setAccount }) => {
                         <StepContent>
                             <Box pb={4} width="100%" border={1}>
                                 <QrReader
-                                    delay={100}
-                                    // style={{ height: 200, width: 200 }}
+                                    style={{ height: 300, width: '100%' }}
                                     onError={(error) => console.log(error)}
                                     onScan={handleScan} />
                             </Box>
