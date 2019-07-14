@@ -1,9 +1,8 @@
 import { Fragment, useState } from "react"
-import { Box, Typography, Icon, Button, IconButton, Fab, CircularProgress } from "@material-ui/core"
+import { Box, Typography, Icon, Button, Fab, CircularProgress } from "@material-ui/core"
 import { LibraSvgIcon } from "."
 import { SendOutlined, RefreshOutlined } from "@material-ui/icons"
 import { makeStyles } from "@material-ui/styles"
-import classNames from 'classnames'
 import Axios from "axios"
 
 Axios.defaults.timeout = 1000 * 30
@@ -19,31 +18,6 @@ const useStyles = makeStyles(theme => ({
         fontSize: 11,
         color: '#aaa',
         marginLeft: theme.spacing(2)
-    },
-    wrapper: {
-        margin: theme.spacing(1),
-        position: 'relative',
-    },
-    buttonSuccess: {
-        //backgroundColor: green[500],
-        //'&:hover': {
-        //    backgroundColor: green[700],
-        //},
-    },
-    fabProgress: {
-        // color: green[500],
-        position: 'absolute',
-        top: -6,
-        left: -6,
-        zIndex: 1,
-    },
-    buttonProgress: {
-        // color: green[500],
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        marginTop: -12,
-        marginLeft: -12,
     },
 }))
 
@@ -134,8 +108,14 @@ export default ({ history, account, setAccount }) => {
             </Box>
             <Box width="100%" mb={2}>
                 <Button onClick={onSendLibra} variant="contained" fullWidth color="primary" className={classes.button}>
-                    <SendOutlined fontSize="small" className={classes.leftIcon} />
-                    Send Libra/Payment
+                    <Box
+                        width="100%"
+                        alignItems="center"
+                        display="flex"
+                        justifyContent="space-between">
+                        <Box><SendOutlined fontSize="small" /></Box>
+                        <Box flexGrow={1}><Typography variant="body2">Send Libra/Payment</Typography></Box>
+                    </Box>
                 </Button>
                 <Typography variant="body2" className={classes.btnLabel}>
                     Send Libra as Payment or Money Transfer
@@ -143,21 +123,29 @@ export default ({ history, account, setAccount }) => {
             </Box>
             <Box width="100%" mb={2}>
                 <Button onClick={onReceiveLibra} variant="contained" fullWidth color="primary" className={classes.button}>
-                    <Icon fontSize="small" className={classNames("fas fa-qrcode", classes.leftIcon)} />
-                    Receive Libra
-            </Button>
-                <Typography variant="body2" className={classes.btnLabel}>
-                    Receive / Accept Payment
-        </Typography>
+                    <Box
+                        width="100%"
+                        alignItems="center"
+                        display="flex"
+                        justifyContent="space-between">
+                        <Box><Icon fontSize="small" className="fas fa-qrcode" /></Box>
+                        <Box flexGrow={1}><Typography variant="body2">Receive Libra</Typography></Box>
+                    </Box>
+                </Button>
+                <Typography variant="body2" className={classes.btnLabel}>Receive / Accept Payment</Typography>
             </Box>
             <Box width="100%" mb={2}>
-                <Button variant="contained" fullWidth color="primary" className={classes.button}>
-                    <Icon fontSize="small" className={classNames("fas fa-money-bill-wave", classes.leftIcon)} />
-                    Send to M-Pesa (Coming soon)
-        </Button>
-                <Typography variant="body2" className={classes.btnLabel}>
-                    Exchange your Libra via M-Pesa
-        </Typography>
+                <Button variant="contained" fullWidth color="primary" style={{ backgroundColor: "#5d8035" }}>
+                    <Box
+                        width="100%"
+                        alignItems="center"
+                        display="flex"
+                        justifyContent="space-between">
+                        <Box><Icon fontSize="small" className="fas fa-money-bill-wave" /></Box>
+                        <Box flexGrow={1}><Typography variant="body2">Send to M-Pesa (Coming soon)</Typography></Box>
+                    </Box>
+                </Button>
+                <Typography variant="body2" className={classes.btnLabel}>Exchange your Libra via M-Pesa</Typography>
             </Box>
         </Fragment >
     )

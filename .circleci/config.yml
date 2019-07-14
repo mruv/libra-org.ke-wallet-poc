@@ -38,7 +38,7 @@ workflows:
   version: 2
   deploy_libra_wallet_service:
     jobs:
-      - deploy:
-        branches:
-          only:
+      - deploy
+        - branches
+          only
             - master

@@ -1,6 +1,6 @@
 import { Fragment, useState } from "react"
 import {
-    Box, ListItemText, ListItem, Avatar, Icon, Button, Snackbar, IconButton
+    Box, ListItemText, ListItem, Avatar, Icon, Button, Snackbar, IconButton, Typography
 } from "@material-ui/core"
 import QRCode from 'qrcode.react'
 import { ShareOutlined, ChevronLeftRounded, CloseOutlined } from "@material-ui/icons"
@@ -119,10 +119,12 @@ export default ({ history, account }) => {
                         primary="Share account address" secondary="Copy address to clipboard" />
                 </ListItem>
             </Box>
-            <Box mt={4} width="90%">
-                <Button onClick={onBack} variant="outlined" fullWidth size="small">
-                    <ChevronLeftRounded fontSize="small" />
-                    {"Back"}
+            <Box mt={4} pl={2} width="100%">
+                <Button onClick={onBack} variant="text" fullWidth size="small">
+                    <Box display="flex" width="100%">
+                        <Icon className="fas fa-chevron-circle-left" fontSize="small" />
+                        <Typography style={{ paddingLeft: 16 }} variant="body2">Back</Typography>
+                    </Box>
                 </Button>
             </Box>
         </Fragment>

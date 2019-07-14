@@ -32,6 +32,10 @@ export default (theme) => {
             },
             containedPrimary: {
                 color: theme.palette.common.white,
+                '&$disabled': {
+                    backgroundColor: theme.palette.primary.light,
+                    color: "#fff"
+                },
             },
         }
     }

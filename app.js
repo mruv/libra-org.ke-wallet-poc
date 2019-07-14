@@ -39,8 +39,16 @@ const getLibraCli = () => {
 }
 
 // Load the SPA React.js UI
-app.get('/', function (req, res, next) {
-    res.render('index')
+app.get('/', (req, res, next) => res.render('index'))
+
+app.post("/v1/verifyLogin", async (req, res) => {
+    const { login } = req.body
+    const count = await LibraAccount.find()
+        .or([{ emailAddress: login }, { mobileNumber: login }])
+        .countDocuments()
+
+    // console.log(count)
+    res.sendStatus(count ? 200 : 404)
 })
 
 app.get("/v1/initialize", (req, res) => {

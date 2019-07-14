@@ -15,18 +15,14 @@ const LibraAccountSchema = new Mongoose.Schema({
     }
 })
 
-/*LibraAccountSchema.statics.findByLogin = async (login) => {
+LibraAccountSchema.statics.findByLogin = async (login) => {
 
-    let account = await this.findOne({ address: login })
-    if (!account) {
-        account = await this.findOne({ emailAddress: login })
-    }
+    let account = await this.findOne({ emailAddress: login })
 
     if (!account) {
         account = await this.findOne({ mobileNumber: login })
     }
-
     return account
-}*/
+}
 
 module.exports.LibraAccount = Mongoose.model('LibraAccount', LibraAccountSchema)
