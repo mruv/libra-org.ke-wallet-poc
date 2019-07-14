@@ -2,7 +2,7 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 2.1
+version: 2.0
 jobs:
   build:
     docker:
@@ -22,7 +22,7 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
       - run: npm start
 
-  deploy:
+  redeploy:
     machine:
       image: ubuntu-1604:201903-01
     steps:
@@ -38,7 +38,7 @@ workflows:
   version: 2
   deploy_libra_wallet_service:
     jobs:
-      - deploy
-        - branches
-          only
-            - master
+      - redeploy:
+        filters:
+          branches:
+            only: master
