@@ -149,6 +149,7 @@ export default ({ history, setAccount, account }) => {
             newFormConf.address = content
             setFormConf(newFormConf)
             setActiveStep(1)
+            setIsConfirmDisabled(false)
         }
     }
 
