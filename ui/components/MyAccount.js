@@ -96,7 +96,7 @@ export default ({ history, account, setAccount }) => {
                         </Box>
                     </Box>
                     <Box>
-                        {isRefreshing ? <CircularProgress size={34} /> :
+                        {isRefreshing ? <CircularProgress size={40} /> :
                             <Fab
                                 color="primary" size="small"
                                 aria-label="Refresh" onClick={onRefresh}>
